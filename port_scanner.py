@@ -1,19 +1,20 @@
 import socket
 import re
+import warnings
 
 def get_open_ports(target, port_range, verbose = False):
     ip = ""
     open_ports = []
     try:
+        warnings.filterwarnings(action="ignore", message="unclosed", category=ResourceWarning)
         ip = socket.gethostbyname(target)
         for port in range(port_range[0], port_range[1]+1):
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             socket.setdefaulttimeout(1)
-
             result = s.connect_ex((ip, port))
+            s.close
             if result == 0:
                 open_ports.append(port)
-            s.close
     except KeyboardInterrupt:
         return "Exiting program!"
     except socket.gaierror:
